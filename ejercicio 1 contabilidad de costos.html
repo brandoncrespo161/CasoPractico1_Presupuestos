@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctico 1 - Contabilidad de Costos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+</head>
+<body class="bg-gray-100 p-4 md:p-6 font-sans text-gray-800">
+
+    <div class="max-w-6xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-lg">
+        
+        <div class="flex flex-col md:flex-row gap-2 mb-6 border-b-2 border-blue-900 pb-0 overflow-x-auto">
+            <button id="btnPortada" onclick="cambiarPestana('portada')" class="px-4 py-3 font-bold rounded-t-lg transition duration-200 bg-blue-900 text-white whitespace-nowrap">
+                🏠 Portada.
+            </button>
+            <button id="btnEj1" onclick="cambiarPestana('ej1')" class="px-4 py-3 font-bold rounded-t-lg transition duration-200 bg-gray-200 text-gray-600 hover:bg-gray-300 whitespace-nowrap">
+                📚 Ej. 1: Antioquia
+            </button>
+            <button id="btnEj2" onclick="cambiarPestana('ej2')" class="px-4 py-3 font-bold rounded-t-lg transition duration-200 bg-gray-200 text-gray-600 hover:bg-gray-300 whitespace-nowrap">
+                🤖 Ej. 2: Robótica
+            </button>
+            <button id="btnEj3" onclick="cambiarPestana('ej3')" class="px-4 py-3 font-bold rounded-t-lg transition duration-200 bg-gray-200 text-gray-600 hover:bg-gray-300 whitespace-nowrap">
+                🏫 Ej. 3: Col. Británico
+            </button>
+            <button id="btnEj4" onclick="cambiarPestana('ej4')" class="px-4 py-3 font-bold rounded-t-lg transition duration-200 bg-gray-200 text-gray-600 hover:bg-gray-300 whitespace-nowrap">
+                🛍️ Ej. 4: Desiderata
+            </button>
+        </div>
+
+        <div id="vistaPortada" class="block animate-fade-in">
+            <div class="border-4 border-double border-gray-300 p-8 rounded-lg mb-8 text-center bg-white relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-4 bg-blue-900"></div>
+                
+                <div class="flex flex-col md:flex-row justify-center items-center gap-8 mt-6 mb-4">
+                    <img src="https://i.imgur.com/RCwId4K.png" alt="Logo Institucional 1" class="max-h-24 object-contain">
+                    <img src="https://i.imgur.com/3PvUiHC.png" alt="Logo Institucional 2" class="max-h-24 object-contain">
+                </div>
+
+                <h1 class="text-4xl font-extrabold text-blue-900 tracking-tight mt-2">FUNDE | FDE</h1>
+                <h2 class="text-xl font-medium text-gray-500 mb-8 uppercase tracking-widest">Fundación para el Desarrollo y la Educación</h2>
+                
+                <div class="my-10 space-y-4">
+                    <p class="text-3xl font-bold text-gray-800">Actividad 1: Práctico - Presupuestos</p>
+                    <p class="text-xl font-medium text-blue-700 bg-blue-50 inline-block px-4 py-1 rounded">Contabilidad de Costos</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left max-w-3xl mx-auto mt-12 bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <div>
+                        <p class="text-sm text-gray-500 uppercase tracking-wide font-bold">Estudiante</p>
+                        <p class="text-lg font-bold text-gray-800">Brandon Alejandro Crespo Flores</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 uppercase tracking-wide font-bold">Docente</p>
+                        <p class="text-lg font-bold text-gray-800">Ing. Ana Valentina Castro Bejarano</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 p-6 rounded-lg shadow-sm max-w-3xl mx-auto">
+                <div class="flex justify-between items-center border-b border-blue-200 pb-3 mb-4">
+                    <h3 class="text-xl font-bold text-blue-900">Configuración Global Económica</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-blue-900">T.C. Oficial (Bs/$)</label>
+                        <input type="number" step="0.01" id="globalTcOficial" value="6.96" class="w-full border p-3 rounded text-lg font-bold text-gray-700 focus:ring-2 focus:ring-blue-500" onchange="actualizarGlobales()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-blue-900">T.C. Referencial / Paralelo (Bs/$)</label>
+                        <input type="number" step="0.01" id="globalTcReferencial" value="9.68" class="w-full border p-3 rounded text-lg font-bold text-green-700 focus:ring-2 focus:ring-blue-500" onchange="actualizarGlobales()">
+                        <p class="text-xs text-green-800 mt-1">Última actualización: 24 de abril de 2026</p>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-4 text-center">* Estos valores se aplicarán automáticamente a todos los ejercicios del práctico.</p>
+            </div>
+        </div>
+
+        <div id="vistaEjercicios" class="hidden animate-fade-in">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 pb-4 border-b">
+                <div>
+                    <h1 id="mainTitle" class="text-3xl font-bold text-blue-800">Título</h1>
+                    <p id="subTitle" class="text-gray-500 mt-1">Subtítulo</p>
+                </div>
+                <div class="flex gap-3 mt-4 md:mt-0">
+                    <div class="bg-blue-50 border border-blue-200 px-4 py-2 rounded text-sm font-bold text-blue-800 flex flex-col justify-center">
+                        <span id="badgeOficial">Oficial: 6.96 Bs</span>
+                        <span id="badgeRef" class="text-green-700">Ref: 9.68 Bs</span>
+                    </div>
+                    <button onclick="exportarExcel()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded shadow transition duration-200 flex items-center gap-2">
+                        📊 Descargar Excel
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 bg-gray-50 p-4 rounded border border-gray-200 shadow-sm">
+                <div>
+                    <label id="lblParticipantes" class="block text-sm font-bold mb-1 text-gray-700">Cantidad</label>
+                    <input type="number" id="participantes" value="50" class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500" onchange="calcular()">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1 text-gray-700">Ganancia Esperada (%)</label>
+                    <input type="number" id="margenPorcentaje" value="100" class="w-full border p-2 rounded" onchange="calcular()">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1 text-gray-700">Impuestos (IVA+IT %)</label>
+                    <input type="number" step="1" id="impuestosPorcentaje" value="16" class="w-full border p-2 rounded" onchange="calcular()">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto mb-8 shadow-sm rounded border border-gray-300">
+                <table id="tablaCostos" class="min-w-full bg-white text-sm">
+                    <thead class="bg-gray-800 text-white">
+                        <tr>
+                            <th class="py-3 px-4 border-b border-gray-700">N° / Ítem</th>
+                            <th class="py-3 px-4 border-b border-gray-700">Tipo de Costo</th>
+                            <th class="py-3 px-4 border-b border-gray-700">Cálculo Base</th>
+                            <th class="py-3 px-4 border-b border-gray-700">Total Bruto (Bs)</th>
+                            <th class="py-3 px-4 border-b border-gray-700">Neto 87% (Bs)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTabla" class="text-center">
+                        </tbody>
+                </table>
+            </div>
+
+            <div id="panelBritanico" class="hidden mb-8 bg-indigo-50 border border-indigo-200 p-6 rounded-lg shadow-sm">
+                <h3 class="text-xl font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Respuestas Administrativas - Colegio Británico</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-4 rounded border border-indigo-100 shadow-sm">
+                        <p class="text-sm text-gray-500 mb-1 font-bold">Respuesta: Pago a Docentes (con Dcto. 13% IVA)</p>
+                        <p class="text-gray-800 mb-2">Monto total honorarios brutos: <strong id="resDocenteBruto" class="text-blue-600">0 Bs</strong></p>
+                        <p class="text-sm">Aplicando la retención del 13% a quienes no facturan, el pago líquido será:</p>
+                        <p class="text-2xl font-bold text-indigo-700 mt-2" id="resDocenteLiquido">0 Bs</p>
+                    </div>
+                    <div class="bg-white p-4 rounded border border-indigo-100 shadow-sm">
+                        <p class="text-sm text-gray-500 mb-1 font-bold">Respuesta: ¿Conviene aperturar? ¿Cuántas personas?</p>
+                        <p class="text-sm mb-2">Para cubrir costos y asegurar la utilidad del 55%, el Punto de Equilibrio es de:</p>
+                        <p class="text-2xl font-bold text-red-600 mb-2"><span id="resDecisionPE">0</span> Alumnos inscritos</p>
+                        <p id="textoDecision" class="font-semibold text-gray-800 bg-gray-100 p-2 rounded text-sm text-center">Análisis dinámico...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-0 rounded border border-gray-300 shadow-sm overflow-hidden">
+                    <table class="min-w-full text-sm">
+                        <tbody>
+                            <tr class="bg-gray-50 border-b hover:bg-gray-100">
+                                <td class="py-2 px-4 font-semibold text-gray-700">Subtotal Costos Fijos</td>
+                                <td class="py-2 px-4 text-right font-bold" id="lblSubFijos">0.00</td>
+                            </tr>
+                            <tr class="bg-gray-50 border-b hover:bg-gray-100">
+                                <td class="py-2 px-4 font-semibold text-gray-700">Subtotal Costos Variables</td>
+                                <td class="py-2 px-4 text-right font-bold" id="lblSubVariables">0.00</td>
+                            </tr>
+                            <tr class="bg-blue-100 border-b">
+                                <td class="py-2 px-4 font-bold text-blue-900">Costo Total</td>
+                                <td class="py-2 px-4 text-right font-bold text-blue-900" id="lblCostoTotal">0.00</td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="py-2 px-4 font-semibold text-gray-700">Cantidad (Unidades/Personas)</td>
+                                <td class="py-2 px-4 text-right" id="lblCantParticipantes">0</td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="py-2 px-4 font-semibold text-gray-700">Costo Unitario</td>
+                                <td class="py-2 px-4 text-right" id="lblCostoUnitario">0.00</td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="py-2 px-4 font-semibold text-gray-700">Margen de Ganancia</td>
+                                <td class="py-2 px-4 text-right text-green-600" id="lblMargen">0.00</td>
+                            </tr>
+                            <tr class="bg-gray-100 border-b">
+                                <td class="py-2 px-4 font-bold text-gray-800">Precio Unitario antes de impue.</td>
+                                <td class="py-2 px-4 text-right font-bold" id="lblPrecioNeto">0.00</td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="py-2 px-4 font-semibold text-gray-700">Impuestos</td>
+                                <td class="py-2 px-4 text-right text-red-600" id="lblImpuestos">0.00</td>
+                            </tr>
+                            <tr class="bg-green-100 border-b">
+                                <td class="py-3 px-4 font-bold text-green-900 text-base">Precio unitario con IVA</td>
+                                <td class="py-3 px-4 text-right font-bold text-green-900 text-base" id="lblPrecioFinal">0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <div class="bg-yellow-50 p-4 rounded border border-yellow-300 shadow-sm flex flex-col justify-center items-center transition-all">
+                        <h3 class="text-lg font-bold mb-1 text-yellow-900 border-b border-yellow-300 pb-1 w-full text-center">Punto de equilibrio</h3>
+                        <div class="text-3xl font-extrabold text-yellow-700 mt-1 flex items-baseline gap-2">
+                            <span id="lblPuntoEquilibrio">0</span>
+                            <span class="text-base font-medium" id="lblTipoPersona">participantes</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800 text-white p-0 rounded shadow-sm overflow-hidden border border-gray-900">
+                        <table class="min-w-full">
+                            <tbody>
+                                <tr class="border-b border-gray-700">
+                                    <td class="py-3 px-6 font-bold">Total Ingresos</td>
+                                    <td class="py-3 px-6 text-right font-bold text-green-400" id="lblTotalIngresos">0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 px-6 font-bold">Total Ganancia</td>
+                                    <td class="py-3 px-6 text-right font-bold text-blue-400" id="lblTotalGanancia">0.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="bg-white border border-gray-300 p-4 rounded shadow-sm">
+                        <h3 class="text-md font-bold mb-2 text-gray-800 border-b pb-1">Presupuesto Total en Dólares ($)</h3>
+                        <p class="flex justify-between mb-1 text-sm"><span>A Tipo de Cambio Oficial:</span> <strong id="resPrecioOficial" class="text-blue-700">0.00 $</strong></p>
+                        <p class="flex justify-between text-sm"><span>A Tipo de Cambio Referencial:</span> <strong id="resPrecioRef" class="text-green-700">0.00 $</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- ESTADO Y VARIABLES GLOBALES ---
+        let seccionActiva = 'portada';
+        let tcOficialGlobal = 6.96;
+        let tcReferencialGlobal = 9.68; // ACTUALIZADO AL NUEVO VALOR (24/04/2026)
+
+        // EJERCICIO 1
+        const datosAntioquia = [
+            { item: "Honorarios Docente", tipo: "Costo Fijo", calc: "$50 x 4 hrs", baseDolares: 200, baseBs: 0, esPorUnidad: false },
+            { item: "Alquiler de Salón", tipo: "Costo Fijo", calc: "1600 Bs", baseDolares: 0, baseBs: 1600, esPorUnidad: false },
+            { item: "Refrigerio", tipo: "Costo Variable", calc: "45 Bs x est.", baseDolares: 0, baseBs: 45, esPorUnidad: true },
+            { item: "Bolígrafos Institucionales", tipo: "Costo Fijo", calc: "6 Bs x 70", baseDolares: 0, baseBs: 6 * 70, esPorUnidad: false },
+            { item: "Folder Plastificado", tipo: "Costo Fijo", calc: "3.6 Bs x 100", baseDolares: 0, baseBs: 3.6 * 100, esPorUnidad: false },
+            { item: "Bloc de notas", tipo: "Costo Variable", calc: "10 Bs x est.", baseDolares: 0, baseBs: 10, esPorUnidad: true },
+            { item: "Impresión Certificados", tipo: "Costo Variable", calc: "9 Bs x est.", baseDolares: 0, baseBs: 9, esPorUnidad: true }
+        ];
+
+        // EJERCICIO 2
+        const datosRobotica = [
+            { item: "Honorarios Docente", tipo: "Costo Fijo", calc: "$700 (16 hrs)", baseDolares: 700, baseBs: 0, esPorUnidad: false },
+            { item: "Pasajes (La Paz - SCZ)", tipo: "Costo Fijo", calc: "3423 Bs", baseDolares: 0, baseBs: 3423, esPorUnidad: false },
+            { item: "Hospedaje", tipo: "Costo Fijo", calc: "1670 Bs", baseDolares: 0, baseBs: 1670, esPorUnidad: false },
+            { item: "Viáticos", tipo: "Costo Fijo", calc: "400 Bs", baseDolares: 0, baseBs: 400, esPorUnidad: false },
+            { item: "Alquiler de Salón", tipo: "Costo Fijo", calc: "1380 Bs x 2 días", baseDolares: 0, baseBs: 2760, esPorUnidad: false },
+            { item: "Alquiler de Equipo", tipo: "Costo Fijo", calc: "893 Bs x 2 días", baseDolares: 0, baseBs: 1786, esPorUnidad: false },
+            { item: "Refrigerio", tipo: "Costo Variable", calc: "35 Bs x est.", baseDolares: 0, baseBs: 35, esPorUnidad: true },
+            { item: "Bolígrafos Institucionales", tipo: "Costo Fijo", calc: "Lote (6x30)", baseDolares: 0, baseBs: 180, esPorUnidad: false },
+            { item: "Folder Plastificado", tipo: "Costo Fijo", calc: "Lote (3.6x30)", baseDolares: 0, baseBs: 108, esPorUnidad: false },
+            { item: "Impresión Certificados", tipo: "Costo Variable", calc: "9 Bs x est.", baseDolares: 0, baseBs: 9, esPorUnidad: true }
+        ];
+
+        // EJERCICIO 3
+        const datosBritanico = [
+            { item: "1. Pago a docentes tiempo completo", tipo: "Costo Fijo", calc: "7doc x 45Bs x 6hrs x 4sem", baseDolares: 0, baseBs: 7560, esPorUnidad: false },
+            { item: "2. Pago niñeras", tipo: "Costo Fijo", calc: "6niñ x 25Bs x 5días x 4hrs x 4sem", baseDolares: 0, baseBs: 12000, esPorUnidad: false },
+            { item: "3. Psicóloga especializada", tipo: "Costo Fijo", calc: "Mensual", baseDolares: 0, baseBs: 4700, esPorUnidad: false },
+            { item: "4. Impuestos del inmueble", tipo: "Costo Fijo", calc: "Mensual", baseDolares: 0, baseBs: 4500, esPorUnidad: false },
+            { item: "5. Servicio de luz y agua", tipo: "Costo Fijo", calc: "Mensual", baseDolares: 0, baseBs: 2700, esPorUnidad: false },
+            { item: "6. Servicio de internet", tipo: "Costo Fijo", calc: "Mensual", baseDolares: 0, baseBs: 850, esPorUnidad: false },
+            { item: "7. Mantenimiento de jardinería", tipo: "Costo Fijo", calc: "Mensual", baseDolares: 0, baseBs: 1400, esPorUnidad: false },
+            { item: "8. Material de clase, juegos", tipo: "Costo Fijo", calc: "Global Mensual", baseDolares: 0, baseBs: 8500, esPorUnidad: false },
+            { item: "9. Compra de material de escritorio", tipo: "Costo Fijo", calc: "Global Mensual", baseDolares: 0, baseBs: 4500, esPorUnidad: false },
+            { item: "10. Mantenimiento Infraestructura", tipo: "Costo Fijo", calc: "Mensual", baseDolares: 0, baseBs: 950, esPorUnidad: false },
+            { item: "11. Parque infantil", tipo: "Costo Fijo", calc: "Global Inversión", baseDolares: 0, baseBs: 5500, esPorUnidad: false },
+            { item: "12. Uniformes del personal", tipo: "Costo Fijo", calc: "Global Mensual", baseDolares: 0, baseBs: 3500, esPorUnidad: false },
+            { item: "13. Snacks (5 veces a la semana)", tipo: "Costo Variable", calc: "30 Bs por niño/mes", baseDolares: 0, baseBs: 30, esPorUnidad: true },
+            { item: "14. Enfermería", tipo: "Costo Fijo", calc: "Mensual", baseDolares: 0, baseBs: 1700, esPorUnidad: false },
+            { item: "15. Seguridad", tipo: "Costo Fijo", calc: "Mensual", baseDolares: 0, baseBs: 5000, esPorUnidad: false }
+        ];
+
+        // EJERCICIO 4
+        const datosDesiderata = [
+            { item: "Pantalones", tipo: "Costo Variable", calc: "Lote 7500 / 300 un = 25 Bs c/u", baseDolares: 0, baseBs: 25, esPorUnidad: true },
+            { item: "Maniquíes", tipo: "Costo Fijo", calc: "Global Inversión", baseDolares: 0, baseBs: 450, esPorUnidad: false },
+            { item: "Pagos de Arrendamiento", tipo: "Costo Fijo", calc: "3500 Bs x 6 meses", baseDolares: 0, baseBs: 21000, esPorUnidad: false },
+            { item: "Pagos Administrativos", tipo: "Costo Fijo", calc: "2800 Bs x 6 meses", baseDolares: 0, baseBs: 16800, esPorUnidad: false },
+            { item: "Mantenimiento Instalaciones", tipo: "Costo Fijo", calc: "Global del semestre", baseDolares: 0, baseBs: 750, esPorUnidad: false },
+            { item: "Servicios Publicitarios", tipo: "Costo Fijo", calc: "Global (Oct-Feb)", baseDolares: 0, baseBs: 7200, esPorUnidad: false },
+            { item: "Papeles de Regalo", tipo: "Costo Fijo", calc: "Lote Global (350 Bs)", baseDolares: 0, baseBs: 350, esPorUnidad: false },
+            { item: "Moños", tipo: "Costo Fijo", calc: "Lote Global (250 Bs)", baseDolares: 0, baseBs: 250, esPorUnidad: false },
+            { item: "Limpieza y Planchado", tipo: "Costo Fijo", calc: "Lote Global (700 Bs)", baseDolares: 0, baseBs: 700, esPorUnidad: false },
+            { item: "Encargadas Atención Cliente", tipo: "Costo Fijo", calc: "1000 c/u x 2 Turnos x 6 meses", baseDolares: 0, baseBs: 12000, esPorUnidad: false },
+            { item: "Limpieza Boutique", tipo: "Costo Fijo", calc: "450 Bs x 24 Semanas", baseDolares: 0, baseBs: 10800, esPorUnidad: false },
+            { item: "Etiquetas", tipo: "Costo Variable", calc: "0.20 Bs c/u", baseDolares: 0, baseBs: 0.20, esPorUnidad: true },
+            { item: "Bolsa de Tela", tipo: "Costo Variable", calc: "0.85 Bs c/u", baseDolares: 0, baseBs: 0.85, esPorUnidad: true },
+            { item: "Comisión de Venta (2%)", tipo: "Costo Variable", calc: "Cálculo Dinámico 2% del Precio", baseDolares: 0, baseBs: 0, esPorUnidad: true, isComision: true }
+        ];
+
+        // --- LÓGICA DE INTERFAZ ---
+        function actualizarGlobales() {
+            tcOficialGlobal = parseFloat(document.getElementById('globalTcOficial').value) || 6.96;
+            tcReferencialGlobal = parseFloat(document.getElementById('globalTcReferencial').value) || 9.68;
+            
+            // Actualizar badges visuales en los ejercicios
+            document.getElementById('badgeOficial').innerText = `Oficial: ${tcOficialGlobal.toFixed(2)} Bs`;
+            document.getElementById('badgeRef').innerText = `Ref: ${tcReferencialGlobal.toFixed(2)} Bs`;
+            
+            if (seccionActiva !== 'portada') calcular();
+        }
+
+        function cambiarPestana(seccion) {
+            seccionActiva = seccion;
+            const vistaPortada = document.getElementById('vistaPortada');
+            const vistaEjercicios = document.getElementById('vistaEjercicios');
+            const btns = {
+                'portada': document.getElementById('btnPortada'),
+                'ej1': document.getElementById('btnEj1'),
+                'ej2': document.getElementById('btnEj2'),
+                'ej3': document.getElementById('btnEj3'),
+                'ej4': document.getElementById('btnEj4')
+            };
+
+            const styleActivo = "px-4 py-3 font-bold rounded-t-lg transition duration-200 bg-blue-900 text-white whitespace-nowrap";
+            const styleInactivo = "px-4 py-3 font-bold rounded-t-lg transition duration-200 bg-gray-200 text-gray-600 hover:bg-gray-300 whitespace-nowrap";
+
+            Object.keys(btns).forEach(k => {
+                btns[k].className = (k === seccion) ? styleActivo : styleInactivo;
+            });
+
+            if(seccion === 'portada') {
+                vistaPortada.classList.remove('hidden');
+                vistaEjercicios.classList.add('hidden');
+            } else {
+                vistaPortada.classList.add('hidden');
+                vistaEjercicios.classList.remove('hidden');
+                configurarEjercicio(seccion);
+            }
+        }
+
+        function configurarEjercicio(seccion) {
+            const titulo = document.getElementById('mainTitle');
+            const sub = document.getElementById('subTitle');
+            const inputPart = document.getElementById('participantes');
+            const inputMargen = document.getElementById('margenPorcentaje');
+            const lblPart = document.getElementById('lblParticipantes');
+            const lblTipo = document.getElementById('lblTipoPersona');
+            const panelBritanico = document.getElementById('panelBritanico');
+
+            if(seccion === 'ej1') {
+                titulo.innerText = 'Sistema de Costos - Curso Antioquia';
+                sub.innerText = 'Análisis financiero estándar';
+                lblPart.innerText = 'Participantes';
+                lblTipo.innerText = 'participantes';
+                inputPart.removeAttribute('max');
+                inputPart.value = 50;
+                inputMargen.value = 100;
+                panelBritanico.classList.add('hidden');
+            } else if (seccion === 'ej2') {
+                titulo.innerText = 'Sistema de Costos - Taller de Robótica';
+                sub.innerText = 'Sede Santa Cruz (Docente: Manuel - 16 hrs)';
+                lblPart.innerText = 'Participantes (Máx 30)';
+                lblTipo.innerText = 'participantes';
+                inputPart.setAttribute('max', '30');
+                inputPart.value = 30;
+                inputMargen.value = 100;
+                panelBritanico.classList.add('hidden');
+            } else if (seccion === 'ej3') {
+                titulo.innerText = 'Presupuesto - Colegio Británico';
+                sub.innerText = 'Apertura Jardín de Niños - Primera Sección';
+                lblPart.innerText = 'Alumnos Proyectados';
+                lblTipo.innerText = 'alumnos';
+                inputPart.removeAttribute('max');
+                inputPart.value = 150; 
+                inputMargen.value = 55; 
+                panelBritanico.classList.remove('hidden');
+            } else if (seccion === 'ej4') {
+                titulo.innerText = 'Proyecto de Inversión - Desiderata';
+                sub.innerText = 'Boutique de Ropa (Proyección 6 meses)';
+                lblPart.innerText = 'Pantalones a Vender';
+                lblTipo.innerText = 'pantalones (unidades)';
+                inputPart.removeAttribute('max');
+                inputPart.value = 300; 
+                inputMargen.value = 72; 
+                panelBritanico.classList.add('hidden');
+            }
+            calcular();
+        }
+
+        function calcular() {
+            let inputParticipantes = document.getElementById('participantes');
+            
+            if (seccionActiva === 'ej2' && parseInt(inputParticipantes.value) > 30) {
+                alert("El máximo de participantes según contrato para Robótica es 30.");
+                inputParticipantes.value = 30;
+            }
+
+            let datosActuales;
+            if(seccionActiva === 'ej1') datosActuales = datosAntioquia;
+            else if (seccionActiva === 'ej2') datosActuales = datosRobotica;
+            else if (seccionActiva === 'ej3') datosActuales = datosBritanico;
+            else datosActuales = datosDesiderata;
+
+            const participantes = parseInt(inputParticipantes.value) || 0;
+            const margenPct = parseFloat(document.getElementById('margenPorcentaje').value) || 0;
+            const impPct = parseFloat(document.getElementById('impuestosPorcentaje').value) || 16;
+
+            // Comisión Desiderata (2%)
+            if (seccionActiva === 'ej4') {
+                let costoBaseTemp = 0;
+                datosActuales.forEach(d => {
+                    if (!d.isComision) {
+                        costoBaseTemp += d.baseDolares > 0 ? (d.baseDolares * tcOficialGlobal) : (d.esPorUnidad ? (d.baseBs * participantes) : d.baseBs);
+                    }
+                });
+                let cUnitTemp = participantes > 0 ? (costoBaseTemp / participantes) : 0;
+                let precioVentaBaseTemp = cUnitTemp * (1 + (margenPct / 100));
+                let comisionDinámica = precioVentaBaseTemp * 0.02;
+                let comObj = datosActuales.find(d => d.isComision);
+                if (comObj) comObj.baseBs = comisionDinámica;
+            }
+
+            let subFijos = 0;
+            let subVariables = 0;
+            let totalHonorariosDocentes = 0; 
+            const tbody = document.getElementById('cuerpoTabla');
+            tbody.innerHTML = '';
+
+            datosActuales.forEach(d => {
+                let costoBs = d.baseDolares > 0 ? (d.baseDolares * tcOficialGlobal) : (d.esPorUnidad ? (d.baseBs * participantes) : d.baseBs);
+                
+                if (d.tipo === "Costo Fijo") subFijos += costoBs;
+                if (d.tipo === "Costo Variable") subVariables += costoBs;
+
+                if(d.item.toLowerCase().includes("docentes tiempo completo")) {
+                    totalHonorariosDocentes += costoBs;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b hover:bg-gray-50";
+                tr.innerHTML = `
+                    <td class="py-2 px-4 border-b text-left font-medium text-gray-700">${d.item}</td>
+                    <td class="py-2 px-4 border-b">
+                        <span class="px-2 py-1 rounded text-xs font-bold ${d.tipo === 'Costo Fijo' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}">
+                            ${d.tipo}
+                        </span>
+                    </td>
+                    <td class="py-2 px-4 border-b text-gray-500">${d.calc}</td>
+                    <td class="py-2 px-4 border-b font-bold text-gray-800">${costoBs.toFixed(2)}</td>
+                    <td class="py-2 px-4 border-b text-gray-600">${(costoBs * 0.87).toFixed(2)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            const costoTotal = subFijos + subVariables;
+            const costoUnitario = participantes > 0 ? (costoTotal / participantes) : 0;
+            const margenGanancia = costoUnitario * (margenPct / 100);
+            const precioNeto = costoUnitario + margenGanancia;
+            const impuestos = precioNeto * (impPct / 100);
+            const precioFinal = precioNeto + impuestos;
+            
+            const costoVariableUnitario = participantes > 0 ? (subVariables / participantes) : 0;
+            const divPuntoEquilibrio = precioNeto - costoVariableUnitario;
+            const puntoEquilibrio = divPuntoEquilibrio > 0 ? Math.ceil(subFijos / divPuntoEquilibrio) : 0;
+
+            const totalIngresos = precioFinal * participantes;
+            const totalImpuestos = impuestos * participantes;
+            const totalGanancia = totalIngresos - costoTotal - totalImpuestos;
+
+            document.getElementById('lblSubFijos').innerText = subFijos.toFixed(2) + " Bs";
+            document.getElementById('lblSubVariables').innerText = subVariables.toFixed(2) + " Bs";
+            document.getElementById('lblCostoTotal').innerText = costoTotal.toFixed(2) + " Bs";
+            document.getElementById('lblCantParticipantes').innerText = participantes;
+            document.getElementById('lblCostoUnitario').innerText = costoUnitario.toFixed(2) + " Bs";
+            document.getElementById('lblMargen').innerText = margenGanancia.toFixed(2) + " Bs";
+            document.getElementById('lblPrecioNeto').innerText = precioNeto.toFixed(2) + " Bs";
+            document.getElementById('lblImpuestos').innerText = impuestos.toFixed(2) + " Bs";
+            document.getElementById('lblPrecioFinal').innerText = precioFinal.toFixed(2) + " Bs";
+            document.getElementById('lblPuntoEquilibrio').innerText = isFinite(puntoEquilibrio) ? puntoEquilibrio : 0;
+            
+            document.getElementById('lblTotalIngresos').innerText = totalIngresos.toFixed(2) + " Bs";
+            document.getElementById('lblTotalGanancia').innerText = totalGanancia.toFixed(2) + " Bs";
+
+            // Cálculo en dólares referenciado a los valores globales
+            document.getElementById('resPrecioOficial').innerText = (precioFinal / tcOficialGlobal).toFixed(2) + " $";
+            document.getElementById('resPrecioRef').innerText = (precioFinal / tcReferencialGlobal).toFixed(2) + " $";
+
+            if(seccionActiva === 'ej3') {
+                document.getElementById('resDocenteBruto').innerText = totalHonorariosDocentes.toFixed(2) + " Bs";
+                const retencion = totalHonorariosDocentes * 0.13;
+                document.getElementById('resDocenteLiquido').innerText = (totalHonorariosDocentes - retencion).toFixed(2) + " Bs";
+                document.getElementById('resDecisionPE').innerText = isFinite(puntoEquilibrio) ? puntoEquilibrio : 0;
+
+                const textoDecision = document.getElementById('textoDecision');
+                if(participantes >= puntoEquilibrio && puntoEquilibrio > 0) {
+                    textoDecision.className = "font-bold bg-green-100 text-green-800 p-3 rounded text-sm mt-3 block";
+                    textoDecision.innerText = `✅ DECISIÓN: SÍ CONVIENE APERTURAR.\nSe necesitan mínimo ${puntoEquilibrio} alumnos. Con la proyección de ${participantes} inscritos, el colegio cubre todos sus costos y obtiene el margen del 55% esperado.`;
+                } else {
+                    textoDecision.className = "font-bold bg-red-100 text-red-800 p-3 rounded text-sm mt-3 block";
+                    textoDecision.innerText = `❌ DECISIÓN: RIESGO DE PÉRDIDA.\nPara que el colegio sea viable y alcance la utilidad, es OBLIGATORIO inscribir al menos ${puntoEquilibrio} alumnos. La proyección actual (${participantes}) es insuficiente.`;
+                }
+            }
+        }
+
+        function exportarExcel() {
+            var wb = XLSX.utils.book_new();
+            
+            let tituloDoc, subTituloDoc, nomArchivo, nomHoja;
+            if(seccionActiva === 'ej1') {
+                tituloDoc = "SISTEMA DE COSTOS - CURSO ANTIOQUIA";
+                subTituloDoc = "Actividad 1 - Práctico 1";
+                nomArchivo = "Ejercicio_1_Antioquia.xlsx";
+                nomHoja = "Costos Antioquia";
+            } else if (seccionActiva === 'ej2') {
+                tituloDoc = "SISTEMA DE COSTOS - TALLER DE ROBÓTICA";
+                subTituloDoc = "Sede Santa Cruz - Docente: Manuel";
+                nomArchivo = "Ejercicio_2_Robotica.xlsx";
+                nomHoja = "Costos Robótica";
+            } else if (seccionActiva === 'ej3') {
+                tituloDoc = "PRESUPUESTO - COLEGIO BRITÁNICO";
+                subTituloDoc = "Jardín de Niños (Primera Sección)";
+                nomArchivo = "Ejercicio_3_Britanico.xlsx";
+                nomHoja = "Presupuesto Colegio";
+            } else {
+                tituloDoc = "PROYECTO DE INVERSIÓN - DESIDERATA";
+                subTituloDoc = "Boutique de Ropa (Proyección 6 meses)";
+                nomArchivo = "Ejercicio_4_Desiderata.xlsx";
+                nomHoja = "Presupuesto Desiderata";
+            }
+
+            var ws_data = [
+                [tituloDoc],
+                [subTituloDoc],
+                [],
+                ["PARÁMETROS DEL CÁLCULO"],
+                ["Participantes/Alumnos/Pantalones:", document.getElementById('participantes').value],
+                ["Ganancia Esperada (%):", document.getElementById('margenPorcentaje').value],
+                ["Impuestos (%):", document.getElementById('impuestosPorcentaje').value],
+                ["T.C. Oficial:", tcOficialGlobal],
+                ["T.C. Referencial:", tcReferencialGlobal],
+                [],
+                ["TABLA DETALLADA DE COSTOS"]
+            ];
+
+            var tabla = document.getElementById("tablaCostos");
+            var ws = XLSX.utils.table_to_sheet(tabla);
+            XLSX.utils.sheet_add_aoa(ws, ws_data, {origin: "A1"});
+            
+            const resumenEstructurado = [
+                [],
+                ["RESUMEN FINANCIERO ESTRUCTURADO"],
+                ["Subtotal Costos Fijos", document.getElementById('lblSubFijos').innerText.replace(' Bs','')],
+                ["Subtotal Costos Variables", document.getElementById('lblSubVariables').innerText.replace(' Bs','')],
+                ["Costo Total", document.getElementById('lblCostoTotal').innerText.replace(' Bs','')],
+                ["Cantidad de Unidades", document.getElementById('lblCantParticipantes').innerText],
+                ["Costo Unitario", document.getElementById('lblCostoUnitario').innerText.replace(' Bs','')],
+                ["Margen de Ganancia", document.getElementById('lblMargen').innerText.replace(' Bs','')],
+                ["Precio Unitario antes de impue.", document.getElementById('lblPrecioNeto').innerText.replace(' Bs','')],
+                ["Impuestos", document.getElementById('lblImpuestos').innerText.replace(' Bs','')],
+                ["Precio unitario con IVA", document.getElementById('lblPrecioFinal').innerText.replace(' Bs','')],
+                ["Precio Total en $ (T.C. Oficial)", document.getElementById('resPrecioOficial').innerText.replace(' $','')],
+                ["Precio Total en $ (T.C. Referencial)", document.getElementById('resPrecioRef').innerText.replace(' $','')],
+                [],
+                ["Punto de equilibrio", document.getElementById('lblPuntoEquilibrio').innerText],
+                [],
+                ["Total Ingresos (Bs)", document.getElementById('lblTotalIngresos').innerText.replace(' Bs','')],
+                ["Total Ganancia (Bs)", document.getElementById('lblTotalGanancia').innerText.replace(' Bs','')]
+            ];
+
+            XLSX.utils.sheet_add_aoa(ws, resumenEstructurado, {origin: -1});
+
+            if(seccionActiva === 'ej3') {
+                const analisisExtra = [
+                    [],
+                    ["RESPUESTAS ADMINISTRATIVAS - COLEGIO BRITÁNICO"],
+                    ["Honorarios Docentes Brutos:", document.getElementById('resDocenteBruto').innerText],
+                    ["Pago Líquido a Docentes (-13% IVA):", document.getElementById('resDocenteLiquido').innerText],
+                    ["Alumnos necesarios para aperturar:", document.getElementById('resDecisionPE').innerText],
+                    ["Decisión Oportuna:", document.getElementById('textoDecision').innerText]
+                ];
+                XLSX.utils.sheet_add_aoa(ws, analisisExtra, {origin: -1});
+            }
+
+            ws['!cols'] = [ {wch: 40}, {wch: 15}, {wch: 25}, {wch: 15}, {wch: 15} ];
+            XLSX.utils.book_append_sheet(wb, ws, nomHoja);
+            XLSX.writeFile(wb, nomArchivo);
+        }
+
+        // Iniciar App
+        actualizarGlobales();
+    </script>
+</body>
+</html>
