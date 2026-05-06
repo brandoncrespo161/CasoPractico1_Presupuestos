@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctico 2 - Contabilidad de Costos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <style>
+        .custom-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+    </style>
+</head>
+<body class="bg-gray-50 p-4 md:p-6 font-sans text-gray-800">
+
+    <div class="max-w-7xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-200">
+        
+        <!-- Pestañas de Navegación -->
+        <div class="flex flex-col md:flex-row gap-1 mb-6 border-b-2 border-blue-900 pb-0 overflow-x-auto">
+            <button id="btnPortada" onclick="cambiarPestana('portada')" class="px-5 py-3 font-bold rounded-t-lg transition duration-200 bg-blue-900 text-white whitespace-nowrap text-sm">
+                🏠 Portada & Config
+            </button>
+            <button id="btnColibri" onclick="cambiarPestana('colibri')" class="px-5 py-3 font-bold rounded-t-lg transition duration-200 bg-gray-200 text-gray-600 hover:bg-gray-300 whitespace-nowrap text-sm border-b-2 border-transparent">
+                🕊️ 1. Empresa Colibrí
+            </button>
+            <button id="btnTotex" onclick="cambiarPestana('totex')" class="px-5 py-3 font-bold rounded-t-lg transition duration-200 bg-gray-200 text-gray-600 hover:bg-gray-300 whitespace-nowrap text-sm border-b-2 border-transparent">
+                🧹 2. Empresa Totex
+            </button>
+            <button id="btnMisCostos" onclick="cambiarPestana('miscostos')" class="px-5 py-3 font-bold rounded-t-lg transition duration-200 bg-gray-200 text-gray-600 hover:bg-gray-300 whitespace-nowrap text-sm border-b-2 border-transparent">
+                👤 3. Costos Mayo 2026
+            </button>
+        </div>
+
+        <!-- ============================== -->
+        <!-- PESTAÑA: PORTADA Y CONFIG GLOBAL -->
+        <!-- ============================== -->
+        <div id="vistaPortada" class="block animate-fade-in">
+            <div class="border-4 border-double border-gray-300 p-8 rounded-lg mb-8 text-center bg-white relative overflow-hidden shadow-sm">
+                <div class="absolute top-0 left-0 w-full h-4 bg-blue-900"></div>
+                
+                <div class="flex flex-col md:flex-row justify-center items-center gap-8 mt-4 mb-4">
+                    <img src="https://i.imgur.com/RCwId4K.png" alt="Logo Institucional 1" class="max-h-24 object-contain">
+                    <img src="https://i.imgur.com/3PvUiHC.png" alt="Logo Institucional 2" class="max-h-24 object-contain">
+                </div>
+
+                <h1 class="text-4xl font-extrabold text-blue-900 tracking-tight mt-2">FUNDE | FDE</h1>
+                <h2 class="text-xl font-medium text-gray-500 mb-6 uppercase tracking-widest">Fundación para el Desarrollo y la Educación</h2>
+                
+                <div class="my-8 space-y-3">
+                    <p class="text-3xl font-bold text-gray-800">Actividad 2: Práctico - Clasificación de Costos</p>
+                    <p class="text-lg font-medium text-blue-800 bg-blue-50 border border-blue-200 inline-block px-5 py-1.5 rounded-full">Contabilidad de Costos</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left max-w-5xl mx-auto mt-10 bg-gray-50 p-6 rounded-lg border border-gray-200 items-center shadow-inner">
+                    <div class="md:px-4">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Estudiante</p>
+                        <p class="text-base font-bold text-gray-800 leading-tight">Brandon Alejandro Crespo Flores</p>
+                    </div>
+                    <div class="md:border-l md:border-r border-gray-300 md:px-6">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Docente</p>
+                        <p class="text-base font-bold text-gray-800 leading-tight">Ing. Ana Valentina Castro Bejarano</p>
+                    </div>
+                    <div class="text-center flex flex-col justify-center items-center md:px-4">
+                        <a href="https://drive.google.com/uc?export=download&id=1ThFyKmNq-GYtwV0qNtkZ2IROGptsfQDO" 
+                           target="_blank"
+                           class="inline-flex justify-center items-center gap-2 bg-blue-800 hover:bg-blue-900 text-white font-bold py-2.5 px-5 rounded shadow transition duration-300 transform hover:-translate-y-0.5 text-sm w-full border border-blue-900">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Descargar Práctico 2
+                        </a>
+                        <p class="text-[11px] text-gray-500 mt-2 font-medium">Formato Word (.docx)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 p-6 rounded-lg shadow-sm max-w-4xl mx-auto">
+                <div class="flex justify-between items-center border-b border-blue-200 pb-3 mb-4">
+                    <h3 class="text-xl font-bold text-blue-900">Configuración Global Económica</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-blue-900">T.C. Oficial (Bs/$)</label>
+                        <input type="number" step="0.01" id="globalTcOficial" value="6.96" class="w-full border border-gray-300 p-3 rounded text-lg font-bold text-gray-700 focus:ring-2 focus:ring-blue-500" onchange="actualizarGlobales()">
+                        <p class="text-xs text-gray-500 mt-1">Este valor se usa para transformar los dólares del Ejercicio 1.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-blue-900">T.C. Referencial / Paralelo (Bs/$)</label>
+                        <input type="number" step="0.01" id="globalTcReferencial" value="9.68" class="w-full border border-green-300 bg-green-50 p-3 rounded text-lg font-bold text-green-800 focus:ring-2 focus:ring-green-500" onchange="actualizarGlobales()">
+                        <p class="text-xs text-green-700 mt-1 font-medium text-right">Última actualización: 24 de abril de 2026</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================== -->
+        <!-- PESTAÑA: EJERCICIOS (Contenedor) -->
+        <!-- ============================== -->
+        <div id="vistaEjercicios" class="hidden animate-fade-in">
+            <!-- Cabecera Dinámica del Ejercicio -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 pb-4 border-b border-gray-300">
+                <div>
+                    <h1 id="mainTitle" class="text-3xl font-bold text-blue-800">Título</h1>
+                    <p id="subTitle" class="text-gray-500 mt-1">Subtítulo</p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0 w-full md:w-auto">
+                    <div class="bg-blue-50 border border-blue-200 px-4 py-2 rounded text-sm font-bold text-blue-800 flex flex-col justify-center shadow-sm">
+                        <span id="badgeOficial">Oficial: 6.96 Bs</span>
+                        <span id="badgeRef" class="text-green-700">Ref: 9.68 Bs</span>
+                    </div>
+                    <button onclick="exportarExcel()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded shadow transition duration-200 flex items-center justify-center gap-2">
+                        📊 Exportar a Excel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel de Respuestas Directas a los Incisos -->
+            <div id="panelRespuestas" class="mb-6 bg-blue-50 border border-blue-200 p-5 rounded-lg shadow-sm">
+                <!-- Se inyecta contenido vía JS para responder EXACTAMENTE lo que pide el Word -->
+            </div>
+
+            <!-- Tabla de Datos Detallada -->
+            <div class="overflow-x-auto mb-8 shadow-sm rounded-lg border border-gray-300">
+                <table id="tablaCostos" class="min-w-full bg-white text-sm">
+                    <thead class="bg-gray-800 text-white">
+                        <tr>
+                            <th class="py-3 px-4 border-b border-gray-700">N° / Detalle</th>
+                            <th class="py-3 px-4 border-b border-gray-700">Clasificación de Costo</th>
+                            <th class="py-3 px-4 border-b border-gray-700">Cálculo o Monto Base</th>
+                            <th class="py-3 px-4 border-b border-gray-700 text-right">Total (Bs)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTabla" class="text-center">
+                        <!-- Generado por JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- UI DE TOTALES -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                
+                <!-- Columna Izquierda: Tabla Estructurada (Costos Netos) -->
+                <div class="bg-white rounded-md border border-gray-300 custom-shadow overflow-hidden">
+                    <table class="min-w-full text-sm">
+                        <tbody>
+                            <tr class="border-b border-gray-200">
+                                <td class="py-3 px-4 text-gray-700">Subtotal Costos Fijos</td>
+                                <td class="py-3 px-4 text-right font-bold text-gray-900" id="lblSubFijos">0.00 Bs</td>
+                            </tr>
+                            <tr class="border-b border-gray-200">
+                                <td class="py-3 px-4 text-gray-700">Subtotal Costos Variables</td>
+                                <td class="py-3 px-4 text-right font-bold text-gray-900" id="lblSubVariables">0.00 Bs</td>
+                            </tr>
+                            <tr class="bg-blue-50 border-b border-gray-200">
+                                <td class="py-4 px-4 font-extrabold text-blue-900 text-lg">Total Costos del Mes</td>
+                                <td class="py-4 px-4 text-right font-extrabold text-blue-900 text-lg" id="lblCostoTotal">0.00 Bs</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Columna Derecha: Conversión a Dólares (Solo aplica a Totex) -->
+                <div class="flex flex-col gap-5">
+                    <div class="bg-white border border-gray-200 p-5 rounded-md custom-shadow" id="cajaDolares">
+                        <h3 class="text-[15px] font-bold mb-3 text-gray-800 border-b border-gray-200 pb-2">Conversión del Total a Dólares ($)</h3>
+                        <p class="flex justify-between mb-2 text-sm text-gray-600"><span>A Tipo de Cambio Oficial (6.96):</span> <strong id="resPrecioOficial" class="text-blue-700 font-bold">0.00 $</strong></p>
+                        <p class="flex justify-between text-sm text-gray-600"><span>A Tipo de Cambio Referencial (9.68):</span> <strong id="resPrecioRef" class="text-green-700 font-bold">0.00 $</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let seccionActiva = 'portada';
+        let tcOficialGlobal = 6.96;
+        let tcReferencialGlobal = 9.68;
+
+        // EJERCICIO 1: COLIBRI
+        const datosColibri = [
+            { item: "1. Alquiler de local", tipo: "Costo Fijo", calc: "$300 x 6.96", baseDolares: 300, baseBs: 0 },
+            { item: "2. Servicio de internet", tipo: "Costo Fijo", calc: "$30 x 6.96", baseDolares: 30, baseBs: 0 },
+            { item: "3. Sueldo a 2 personas (Mañana/Noche)", tipo: "Costo Fijo", calc: "$200 x 6.96", baseDolares: 200, baseBs: 0 },
+            { item: "4. Comisión de ventas 5%", tipo: "Costo Variable", calc: "5% de $6000 (Ventas mes ant.) = $300", baseDolares: 300, baseBs: 0 },
+            { item: "5. Bocaditos y aperitivos", tipo: "Costo Fijo", calc: "$130 x 6.96", baseDolares: 130, baseBs: 0 },
+            { item: "6. Marketing y publicidad", tipo: "Costo Fijo", calc: "$200 x 6.96", baseDolares: 200, baseBs: 0 },
+            { item: "7. Alquiler de vajilla", tipo: "Costo Fijo", calc: "$140 x 6.96", baseDolares: 140, baseBs: 0 },
+            { item: "8. Insumos para jabones artesanales", tipo: "Costo Variable", calc: "$300 x 6.96", baseDolares: 300, baseBs: 0 },
+            { item: "9. Packaging para los productos", tipo: "Costo Variable", calc: "$180 x 6.96", baseDolares: 180, baseBs: 0 },
+            { item: "10. Gasolina para delivery", tipo: "Costo Variable", calc: "$25 x 6.96", baseDolares: 25, baseBs: 0 },
+            { item: "11. Viáticos de los 2 subordinados", tipo: "Costo Fijo", calc: "2 sub. x $20 = $40 x 6.96", baseDolares: 40, baseBs: 0 },
+            { item: "12. Decoración día inauguración", tipo: "Costo Fijo", calc: "$80 x 6.96", baseDolares: 80, baseBs: 0 },
+            { item: "13. Insumos para inciensos", tipo: "Costo Variable", calc: "$120 x 6.96", baseDolares: 120, baseBs: 0 },
+            { item: "14. Compra de estantes", tipo: "Costo Fijo", calc: "$200 x 6.96", baseDolares: 200, baseBs: 0 },
+            { item: "15. Cera y esencias para velas", tipo: "Costo Variable", calc: "$200 x 6.96", baseDolares: 200, baseBs: 0 },
+            { item: "16. Licencia de funcionamiento", tipo: "Costo Fijo", calc: "$30 x 6.96", baseDolares: 30, baseBs: 0 },
+            { item: "17. Impuestos de Ley (16%)", tipo: "Costo Variable", calc: "16% de $6000 (Ventas mes ant.) = $960", baseDolares: 960, baseBs: 0 },
+            { item: "18. Servicio de telefonía cotas", tipo: "Costo Fijo", calc: "$30 x 6.96", baseDolares: 30, baseBs: 0 },
+            { item: "19. Bebidas", tipo: "Costo Fijo", calc: "$70 x 6.96", baseDolares: 70, baseBs: 0 },
+            { item: "20. Alquiler de parlantes", tipo: "Costo Fijo", calc: "$30 x 6.96", baseDolares: 30, baseBs: 0 }
+        ];
+
+        // EJERCICIO 2: TOTEX
+        const datosTotex = [
+            { item: "Material de limpieza", tipo: "Costo Variable", calc: "Uso para 40 casas", baseDolares: 0, baseBs: 7560 },
+            { item: "Alquiler de vehículo", tipo: "Costo Fijo", calc: "Contrato mensual", baseDolares: 0, baseBs: 2500 },
+            { item: "Personal (3 trabajadores)", tipo: "Costo Variable", calc: "3 per × 24 hrs × 80 Bs", baseDolares: 0, baseBs: 5760 },
+            { item: "Gasolina", tipo: "Costo Variable", calc: "Consumo por servicio", baseDolares: 0, baseBs: 350 },
+            { item: "Mantenimiento de vehículo", tipo: "Costo Fijo", calc: "Mantenimiento general", baseDolares: 0, baseBs: 650 },
+            { item: "Gestión de publicidad (Redes)", tipo: "Costo Fijo", calc: "Campaña mensual", baseDolares: 0, baseBs: 350 },
+            { item: "Uniformes del personal", tipo: "Costo Fijo", calc: "120 Bs × 3 personas", baseDolares: 0, baseBs: 360 }
+        ];
+
+        // EJERCICIO 3: MIS COSTOS (MAYO 2026 - MODALIDAD VIRTUAL / TRABAJO)
+        const datosMisCostos = [
+            { item: "Internet Entel", tipo: "Costo Fijo", calc: "Mensualidad del servicio", baseDolares: 0, baseBs: 170 },
+            { item: "Teléfono Fijo", tipo: "Costo Fijo", calc: "Cargo mensual base", baseDolares: 0, baseBs: 30 },
+            { item: "Plan Pospago (Celular)", tipo: "Costo Fijo", calc: "Factura mensual", baseDolares: 0, baseBs: 120 },
+            { item: "Mensualidad Universidad (Modalidad Virtual)", tipo: "Costo Fijo", calc: "Cuota fija de estudios", baseDolares: 0, baseBs: 300 },
+            { item: "Servicio de Agua", tipo: "Costo Variable", calc: "Facturado según consumo", baseDolares: 0, baseBs: 115 },
+            { item: "Servicio de Energía Eléctrica", tipo: "Costo Variable", calc: "Facturado según consumo", baseDolares: 0, baseBs: 160 },
+            { item: "Gas Domiciliario", tipo: "Costo Variable", calc: "Facturado según consumo", baseDolares: 0, baseBs: 14 },
+            { item: "Transporte (Ida y vuelta al trabajo)", tipo: "Costo Variable", calc: "Pasajes y movilidad diaria", baseDolares: 0, baseBs: 350 },
+            { item: "Alimentación (Almuerzos en el trabajo)", tipo: "Costo Variable", calc: "Consumo en días laborales", baseDolares: 0, baseBs: 400 },
+            { item: "Insumos de oficina y escritorio", tipo: "Costo Variable", calc: "Compras según necesidad", baseDolares: 0, baseBs: 80 }
+        ];
+
+        function actualizarGlobales() {
+            tcOficialGlobal = parseFloat(document.getElementById('globalTcOficial').value) || 6.96;
+            tcReferencialGlobal = parseFloat(document.getElementById('globalTcReferencial').value) || 9.68;
+            
+            if(document.getElementById('badgeOficial')){
+                document.getElementById('badgeOficial').innerText = `Oficial: ${tcOficialGlobal.toFixed(2)} Bs`;
+                document.getElementById('badgeRef').innerText = `Ref: ${tcReferencialGlobal.toFixed(2)} Bs`;
+            }
+            if (seccionActiva !== 'portada') calcular();
+        }
+
+        function cambiarPestana(seccion) {
+            seccionActiva = seccion;
+            const vistaPortada = document.getElementById('vistaPortada');
+            const vistaEjercicios = document.getElementById('vistaEjercicios');
+            const btns = {
+                'portada': document.getElementById('btnPortada'),
+                'colibri': document.getElementById('btnColibri'),
+                'totex': document.getElementById('btnTotex'),
+                'miscostos': document.getElementById('btnMisCostos')
+            };
+
+            const styleActivo = "px-5 py-3 font-bold rounded-t-lg transition duration-200 bg-blue-900 text-white whitespace-nowrap shadow-inner border-t border-l border-r border-blue-900";
+            const styleInactivo = "px-5 py-3 font-bold rounded-t-lg transition duration-200 bg-gray-200 text-gray-600 hover:bg-gray-300 whitespace-nowrap border-t border-l border-r border-transparent";
+
+            Object.keys(btns).forEach(k => {
+                btns[k].className = (k === seccion) ? styleActivo : styleInactivo;
+            });
+
+            if(seccion === 'portada') {
+                vistaPortada.classList.remove('hidden');
+                vistaEjercicios.classList.add('hidden');
+            } else {
+                vistaPortada.classList.add('hidden');
+                vistaEjercicios.classList.remove('hidden');
+                configurarEjercicio(seccion);
+            }
+        }
+
+        function configurarEjercicio(seccion) {
+            const titulo = document.getElementById('mainTitle');
+            const sub = document.getElementById('subTitle');
+            const panelRes = document.getElementById('panelRespuestas');
+            const cajaDolares = document.getElementById('cajaDolares');
+
+            if(seccion === 'colibri') {
+                titulo.innerText = '1. Empresa Colibrí';
+                sub.innerText = 'Presupuesto de Apertura Física (Agosto)';
+                
+                cajaDolares.style.display = 'none'; 
+
+                panelRes.innerHTML = `
+                    <h3 class="text-lg font-bold text-blue-900 mb-2 border-b border-blue-200 pb-1">Respuestas al Ejercicio 1</h3>
+                    <ul class="list-disc pl-5 text-sm text-gray-700 space-y-2">
+                        <li><strong>a) Transformar al tipo de cambio 6.96:</strong> Como podemos ver en la tabla, todos los ítems expresados en dólares han sido multiplicados por 6.96 para obtener el total en Bolivianos.</li>
+                        <li><strong>b) Clasificar costos fijos y variables:</strong> Se ha detallado en la tabla. Para este análisis es clave notar que la <strong>Comisión de ventas (5%)</strong> y los <strong>Impuestos (16%)</strong> se calculan tomando como base los $6000 de ventas del mes de julio, ya que son gastos que se generan directamente de la actividad comercial, por lo que son claramente <strong>Costos Variables</strong>.</li>
+                        <li><strong>c) Calcular el total costos para el mes de agosto:</strong> La sumatoria final nos da el resultado exacto en el cuadro de totales abajo.</li>
+                    </ul>
+                `;
+            } else if (seccion === 'totex') {
+                titulo.innerText = '2. Empresa Totex';
+                sub.innerText = 'Servicios de Limpieza (Mes de Noviembre)';
+                
+                cajaDolares.style.display = 'block'; 
+
+                panelRes.innerHTML = `
+                    <h3 class="text-lg font-bold text-blue-900 mb-2 border-b border-blue-200 pb-1">Respuestas al Ejercicio 2</h3>
+                    <ul class="list-disc pl-5 text-sm text-gray-700 space-y-2">
+                        <li><strong>a) Convertir en $ el total de costos:</strong> Para este punto utilicé la tasa de cambio oficial. El resultado se muestra en el cuadro inferior derecho.</li>
+                        <li><strong>b) Clasificar costos fijos y variables:</strong> Se detallan en la tabla. El material de limpieza, el personal y la gasolina se consideran variables porque su gasto aumenta dependiendo de cuántas casas (40 en este caso) se limpien en el mes.</li>
+                        <li><strong>c) ¿Cuánto ganó cada trabajador?:</strong> Si cada uno de los 3 trabajadores acumuló 24 horas en el mes, a un pago de 80 Bs por hora, entonces cada uno ganó <span class="font-bold text-blue-700">1,920 Bs</span> en noviembre (24 x 80).</li>
+                    </ul>
+                `;
+            } else if (seccion === 'miscostos') {
+                titulo.innerText = '3. Clasificación Personal de Costos';
+                sub.innerText = 'Mes de Mayo 2026';
+                
+                cajaDolares.style.display = 'none';
+                
+                panelRes.innerHTML = `
+                    <h3 class="text-lg font-bold text-blue-900 mb-2 border-b border-blue-200 pb-1">Análisis y Clasificación (Mayo 2026)</h3>
+                    <p class="text-sm text-gray-700">A continuación, detallo mis gastos correspondientes al mes de Mayo de 2026. Al estudiar una carrera en modalidad virtual, la cuota de la universidad es un <strong>Costo Fijo</strong>, al igual que los planes de internet y telefonía, ya que se pagan mes a mes independientemente del uso. Por otro lado, los gastos de transporte al trabajo, la alimentación en horario laboral y los servicios básicos (agua, luz, gas) son <strong>Costos Variables</strong>, ya que fluctúan dependiendo de los días trabajados y del consumo en casa.</p>
+                `;
+            }
+            calcular();
+        }
+
+        function calcular() {
+            let datosActuales;
+            if(seccionActiva === 'colibri') datosActuales = datosColibri;
+            else if (seccionActiva === 'totex') datosActuales = datosTotex;
+            else datosActuales = datosMisCostos;
+
+            let subFijos = 0;
+            let subVariables = 0;
+            const tbody = document.getElementById('cuerpoTabla');
+            tbody.innerHTML = '';
+
+            datosActuales.forEach(d => {
+                let costoBs = d.baseDolares > 0 ? (d.baseDolares * tcOficialGlobal) : d.baseBs;
+                
+                if (d.tipo === "Costo Fijo") subFijos += costoBs;
+                if (d.tipo === "Costo Variable") subVariables += costoBs;
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-gray-200 hover:bg-blue-50 transition duration-150";
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-left font-medium text-gray-700">${d.item}</td>
+                    <td class="py-3 px-4">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold ${d.tipo === 'Costo Fijo' ? 'bg-blue-100 text-blue-800' : 'bg-gray-200 text-gray-800'}">
+                            ${d.tipo}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-gray-500 text-sm">${d.calc}</td>
+                    <td class="py-3 px-4 font-bold text-gray-800 text-right">${costoBs.toFixed(2)} Bs</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            const costoTotal = subFijos + subVariables;
+            
+            document.getElementById('lblSubFijos').innerText = subFijos.toFixed(2) + " Bs";
+            document.getElementById('lblSubVariables').innerText = subVariables.toFixed(2) + " Bs";
+            document.getElementById('lblCostoTotal').innerText = costoTotal.toFixed(2) + " Bs";
+
+            if(seccionActiva === 'totex') {
+                document.getElementById('resPrecioOficial').innerText = (costoTotal / tcOficialGlobal).toFixed(2) + " $";
+                document.getElementById('resPrecioRef').innerText = (costoTotal / tcReferencialGlobal).toFixed(2) + " $";
+            }
+        }
+
+        function exportarExcel() {
+            var wb = XLSX.utils.book_new();
+            
+            let tituloDoc = document.getElementById('mainTitle').innerText;
+            let subTituloDoc = document.getElementById('subTitle').innerText;
+            let nomArchivo = "Practico2_" + seccionActiva + ".xlsx";
+
+            var ws_data = [
+                [tituloDoc],
+                [subTituloDoc],
+                [],
+                ["PARÁMETROS GENERALES"],
+                ["T.C. Oficial:", tcOficialGlobal],
+                ["T.C. Referencial:", tcReferencialGlobal]
+            ];
+
+            if (seccionActiva === 'colibri') {
+                ws_data.push(["Base para comisiones e impuestos:", "$6000"]);
+            } else if (seccionActiva === 'miscostos') {
+                ws_data.push(["Mes Analizado:", "Mayo 2026"]);
+            }
+
+            ws_data.push([]);
+            ws_data.push(["TABLA DETALLADA DE COSTOS"]);
+
+            var tabla = document.getElementById("tablaCostos");
+            var ws = XLSX.utils.table_to_sheet(tabla);
+            XLSX.utils.sheet_add_aoa(ws, ws_data, {origin: "A1"});
+            
+            let resumenEstructurado = [
+                [],
+                ["RESUMEN DE TOTALES"],
+                ["Subtotal Costos Fijos", document.getElementById('lblSubFijos').innerText.replace(' Bs','')],
+                ["Subtotal Costos Variables", document.getElementById('lblSubVariables').innerText.replace(' Bs','')],
+                ["TOTAL COSTOS DEL MES", document.getElementById('lblCostoTotal').innerText.replace(' Bs','')]
+            ];
+
+            if(seccionActiva === 'totex') {
+                resumenEstructurado.push(
+                    [],
+                    ["TOTAL EN DÓLARES"],
+                    ["Convertido al T.C. Oficial", document.getElementById('resPrecioOficial').innerText.replace(' $','')],
+                    ["Convertido al T.C. Referencial", document.getElementById('resPrecioRef').innerText.replace(' $','')]
+                );
+            }
+
+            XLSX.utils.sheet_add_aoa(ws, resumenEstructurado, {origin: -1});
+
+            ws['!cols'] = [ {wch: 40}, {wch: 25}, {wch: 35}, {wch: 15} ];
+            XLSX.utils.book_append_sheet(wb, ws, "Hoja de Costos");
+            XLSX.writeFile(wb, nomArchivo);
+        }
+
+        // Iniciar
+        actualizarGlobales();
+    </script>
+</body>
+</html>
